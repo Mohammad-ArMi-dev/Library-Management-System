@@ -1,0 +1,8 @@
+1001|Ali|Mohammadi|1995,2
+1002|Fatemeh|Karimi|1998,5
+1003|Reza|Ahmadi|1992,7,8
+1004|Nima|Hosseinpour|2000
+1005|Maryam|Rahimi|1997
+1006|Hossein|Ghasemi|1989
+1007|Leila|Sadeghi|1994
+1008|Amir|Tamimi|1990
