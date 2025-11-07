@@ -126,11 +126,26 @@ public:
         return -1;
     }
 
-    void validateInput(const string &prompt, auto &input, const string &errorMsg)
+    void validateIntInput(const string &prompt, int &input, const string &errorMsg)
     {
     start:
         cout << prompt;
         cin >> input;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << errorMsg << "\n";
+            goto start;
+        }
+    }
+
+    void validateStrInput(const string &prompt, string &input, const string &errorMsg)
+    {
+    start:
+        cout << prompt;
+        cin.ignore();
+        getline(cin, input);
         if (cin.fail())
         {
             cin.clear();
@@ -146,7 +161,7 @@ public:
         string firstNameInput, lastNameInput;
 
     enter_member_id:
-        validateInput("Membership number: ", memberIdInput, "Invalid input! Please enter a valid membership number.");
+        validateIntInput("Membership number: ", memberIdInput, "Invalid input! Please enter a valid membership number.");
         if (findMemberIndex(memberIdInput) != -1)
         {
             cout << "This membership number is already registered!\n";
@@ -168,7 +183,7 @@ public:
         }
 
     enter_first_name:
-        validateInput("First name: ", firstNameInput, "Invalid input! Please enter a valid first name.");
+        validateStrInput("First name: ", firstNameInput, "Invalid input! Please enter a valid first name.");
         if (firstNameInput.empty())
         {
             cout << "First name cannot be empty!\n";
@@ -180,7 +195,7 @@ public:
         }
 
     enter_last_name:
-        validateInput("Last name: ", lastNameInput, "Invalid input! Please enter a valid last name.");
+        validateStrInput("Last name: ", lastNameInput, "Invalid input! Please enter a valid last name.");
         if (lastNameInput.empty())
         {
             cout << "Last name cannot be empty!\n";
@@ -192,7 +207,7 @@ public:
         }
 
     enter_birth_year:
-        validateInput("Year of birth: ", birthYearInput, "Invalid input! Please enter a valid birth year.");
+        validateIntInput("Year of birth: ", birthYearInput, "Invalid input! Please enter a valid birth year.");
         if (birthYearInput < 1900 || birthYearInput > getCurrentYear())
         {
             cout << "Invalid birth year!\n";
@@ -218,7 +233,7 @@ public:
         string bookTitleInput, bookAuthorInput;
 
     enter_book_id:
-        validateInput("Book ID: ", bookIdInput, "Invalid input! Please enter a valid book ID.");
+        validateIntInput("Book ID: ", bookIdInput, "Invalid input! Please enter a valid book ID.");
         if (findBookIndex(bookIdInput) != -1)
         {
             cout << "This book ID is already registered!\n";
@@ -234,20 +249,20 @@ public:
             return;
         }
 
-        validateInput("Book name: ", bookTitleInput, "Invalid input! Please enter a valid book name.");
+        validateStrInput("Book name: ", bookTitleInput, "Invalid input! Please enter a valid book name.");
         if (bookTitleInput == "0")
         {
             return;
         }
 
-        validateInput("Author's name: ", bookAuthorInput, "Invalid input! Please enter a valid author's name.");
+        validateStrInput("Author's name: ", bookAuthorInput, "Invalid input! Please enter a valid author's name.");
         if (bookAuthorInput == "0")
         {
             return;
         }
 
     enter_copies:
-        validateInput("Number of copies: ", copiesInput, "Invalid input! Please enter a valid number of copies.");
+        validateIntInput("Number of copies: ", copiesInput, "Invalid input! Please enter a valid number of copies.");
         if (bookIdInput < 0)
         {
             cout << "Number of copies must be greater than zero!\n";
@@ -258,7 +273,7 @@ public:
             return;
         }
 
-        bookList.push_back(BookRecord(bookIdInput, bookTitleInput, bookAuthorInput, 0, copiesInput));
+        bookList.push_back(BookRecord(bookIdInput, bookTitleInput, bookAuthorInput, copiesInput, 0));
         persistData();
     }
 
