@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <algorithm>
+#include <limits>
 
 using namespace std;
 
@@ -125,25 +126,27 @@ public:
         return -1;
     }
 
+    void validateInput(const string &prompt, auto &input, const string &errorMsg)
+    {
+    start:
+        cout << prompt;
+        cin >> input;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << errorMsg << "\n";
+            goto start;
+        }
+    }
+
     void registerMember()
     {
         int memberIdInput, birthYearInput;
         string firstNameInput, lastNameInput;
+
     enter_member_id:
-        cout << "Membership number: ";
-        cin >> memberIdInput;
-        if (cin.fail())
-        {
-            cin.clear();
-            cin.ignore();
-            cout << "Invalid input! Please enter a valid membership number.\n";
-            goto enter_member_id;
-        }
-        if (memberList.size() >= 100)
-        {
-            cout << "Member limit reached! Cannot register more members.\n";
-            return;
-        }
+        validateInput("Membership number: ", memberIdInput, "Invalid input! Please enter a valid membership number.");
         if (findMemberIndex(memberIdInput) != -1)
         {
             cout << "This membership number is already registered!\n";
@@ -154,21 +157,18 @@ public:
             cout << "Invalid membership number!\n";
             goto enter_member_id;
         }
+        if (memberList.size() >= 100)
+        {
+            cout << "Member limit reached! Cannot register more members.\n";
+            return;
+        }
         if (memberIdInput == 0)
         {
             return;
         }
+
     enter_first_name:
-        cin.ignore();
-        cout << "First name: ";
-        getline(cin, firstNameInput);
-        if (cin.fail())
-        {
-            cin.clear();
-            cin.ignore();
-            cout << "Invalid input! Please enter a valid first name.\n";
-            goto enter_first_name;
-        }
+        validateInput("First name: ", firstNameInput, "Invalid input! Please enter a valid first name.");
         if (firstNameInput.empty())
         {
             cout << "First name cannot be empty!\n";
@@ -178,36 +178,21 @@ public:
         {
             return;
         }
+
     enter_last_name:
-        cin.ignore();
-        cout << "Last name: ";
-        getline(cin, lastNameInput);
-        if (cin.fail())
-        {
-            cin.clear();
-            cin.ignore();
-            cout << "Invalid input! Please enter a valid last name.\n";
-            goto enter_last_name;
-        }
+        validateInput("Last name: ", lastNameInput, "Invalid input! Please enter a valid last name.");
         if (lastNameInput.empty())
         {
-            cout << "last name cannot be empty!\n";
+            cout << "Last name cannot be empty!\n";
             goto enter_last_name;
         }
         if (lastNameInput == "0")
         {
             return;
         }
+
     enter_birth_year:
-        cout << "Year of birth: ";
-        cin >> birthYearInput;
-        if (cin.fail())
-        {
-            cin.clear();
-            cin.ignore();
-            cout << "Invalid input! Please enter a valid birth year.\n";
-            goto enter_birth_year;
-        }
+        validateInput("Year of birth: ", birthYearInput, "Invalid input! Please enter a valid birth year.");
         if (birthYearInput < 1900 || birthYearInput > getCurrentYear())
         {
             cout << "Invalid birth year!\n";
@@ -222,6 +207,7 @@ public:
         {
             return;
         }
+
         memberList.push_back(MemberRecord(memberIdInput, firstNameInput, lastNameInput, birthYearInput));
         persistData();
     }
@@ -230,70 +216,48 @@ public:
     {
         int bookIdInput, copiesInput;
         string bookTitleInput, bookAuthorInput;
+
     enter_book_id:
-        cout << "Book ID: ";
-        cin >> bookIdInput;
-        if (cin.fail())
-        {
-            cin.clear();
-            cin.ignore();
-            cout << "Invalid input! Please enter a valid book ID.\n";
-            goto enter_book_id;
-        }
+        validateInput("Book ID: ", bookIdInput, "Invalid input! Please enter a valid book ID.");
         if (findBookIndex(bookIdInput) != -1)
         {
             cout << "This book ID is already registered!\n";
+            goto enter_book_id;
+        }
+        if (bookIdInput < 0)
+        {
+            cout << "Invalid book ID!\n";
             goto enter_book_id;
         }
         if (bookIdInput == 0)
         {
             return;
         }
-    enter_book_title:
-        cin.ignore();
-        cout << "Book name: ";
-        getline(cin, bookTitleInput);
-        if (cin.fail())
-        {
-            cin.clear();
-            cin.ignore();
-            cout << "Invalid input! Please enter a valid book name.\n";
-            goto enter_book_title;
-        }
+
+        validateInput("Book name: ", bookTitleInput, "Invalid input! Please enter a valid book name.");
         if (bookTitleInput == "0")
         {
             return;
         }
-    enter_book_author:
-        cin.ignore();
-        cout << "Author's name: ";
-        getline(cin, bookAuthorInput);
-        if (cin.fail())
-        {
-            cin.clear();
-            cin.ignore();
-            cout << "Invalid input! Please enter a valid author's name.\n";
-            goto enter_book_author;
-        }
+
+        validateInput("Author's name: ", bookAuthorInput, "Invalid input! Please enter a valid author's name.");
         if (bookAuthorInput == "0")
         {
             return;
         }
-    enter_book_copies:
-        cin.ignore();
-        cout << "Number of copies: ";
-        cin >> copiesInput;
-        if (cin.fail())
+
+    enter_copies:
+        validateInput("Number of copies: ", copiesInput, "Invalid input! Please enter a valid number of copies.");
+        if (bookIdInput < 0)
         {
-            cin.clear();
-            cin.ignore();
-            cout << "Invalid input! Please enter a valid number of copies.\n";
-            goto enter_book_copies;
+            cout << "Number of copies must be greater than zero!\n";
+            goto enter_copies;
         }
         if (copiesInput == 0)
         {
             return;
         }
+
         bookList.push_back(BookRecord(bookIdInput, bookTitleInput, bookAuthorInput, 0, copiesInput));
         persistData();
     }
